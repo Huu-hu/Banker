@@ -9,6 +9,7 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 	cout << "输入资源数量：";
 	cin >> g_srcNum;
 	cout << "输入需要测试的进程数量";
+	cin >> g_proNum;
 
 	for (int i = 0; i < g_srcNum; i++)
 	{
