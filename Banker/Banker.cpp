@@ -8,22 +8,24 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 {
 	cout << "输入资源数量：";
 	cin >> g_srcNum;
-	cout << "输入需要测试的进程数量";
+	cout << "输入需要测试的进程数量:";
 	cin >> g_proNum;
 
-	//for (int i = 0; i < g_srcNum; i++)
-	//{
-	//	int temp=0;
-	//	cout << "输入第" << i + 1 << "种资源总量：";
-	//	cin >> temp;
-	//	Sum.push_back(temp);
-	//}
+	for (int i = 0; i < g_srcNum; i++)
+	{
+		int temp=0;
+		cout << "输入第" << i + 1 << "种资源总量：";
+		cin >> temp;
+		Sum.push_back(temp);
+	}
 
 	for(int i=0;i<g_proNum;i++)		//设置每种进程所需的各种资源数量
 		for (int j = 0; j < g_srcNum; j++)
 		{
-			cout << "输入第" << i + 1 << "进程的第" << j + 1 << "种资源所需要的最大数量" << endl;
-			cin >> Max[i][j];
+			int temp = 0;
+			cout << "输入第" << i + 1 << "进程的第" << j + 1 << "种资源所需要的最大数量:" << endl;
+			cin >> temp;
+			Max[i].push_back(temp);
 		}
 
 	for (int i = 0; i < g_proNum; i++)		//设置各个进程已获得的资源数
