@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="G:\Program\OS\Banker\Banker.py">
-      <Filter>资源文件</Filter>
+      <Filter>源文件</Filter>
     </None>
   </ItemGroup>
 </Project>
