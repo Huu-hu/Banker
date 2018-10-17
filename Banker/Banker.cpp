@@ -25,7 +25,7 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 		for (int j = 0; j < g_srcNum; j++)
 		{
 			int temp = 0;
-			cout << "输入第" << i + 1 << "进程的第" << j + 1 << "种资源所需要的最大数量:" << endl;
+			cout << "输入第" << i + 1 << "进程的第" << j + 1 << "种资源所需要的最大数量:" ;
 			cin >> temp;
 			maxTemp.push_back(temp);
 		}
@@ -37,7 +37,7 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 		for (int j = 0; j < g_srcNum; j++)
 		{
 			int temp;
-			cout << "输入第" << i + 1 << "进程的第" << j + 1 << "种资源已获得数量" << endl;
+			cout << "输入第" << i + 1 << "进程的第" << j + 1 << "种资源已获得数量：" ;
 			cin >> temp;
 			allocationTemp.push_back(temp);
 		}
@@ -71,18 +71,20 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 		Finish.push_back(false);
 	}
 
-	for (int j = 0; j < g_srcNum; j++)		//初始化Request
-	{
-		Finish.push_back(0);
-	}
+	//for (int j = 0; j < g_srcNum; j++)		//初始化Request
+	//{
+	//	Finish.push_back(0);
+	//}
 }										
 
 void setRequest(vector<int> &Request)
 {
 	for (int i = 0; i < g_srcNum; i++)
 	{
+		int temp;
 		cout << "输入第" << i + 1 << "种资源的请求数量：";
-		cin >> Request[i];
+		cin >> temp;
+		Request.push_back(temp);
 	}
 }
 
@@ -93,7 +95,6 @@ int safeCheck(vector<int> &Request, vector<vector<int>> &Need,vector<int> &Avail
 	//cout << "设置需要请求的进程的ID号:";
 	//cin >> proID;
 	setRequest(Request);
-	proID--;
 	for (size_t i = 0; i < g_srcNum; i++)
 	{
 		if (Request[i]>Need[proID][i])
@@ -209,17 +210,11 @@ void resultFunction(bool flag)
 	}
 }
 
-void menu()
+
+int main()
 {
 	int flagCase;
-	cout << "输入数字选择相应功能（请顺序执行）" << endl;
-	cout << "======================" << endl;
-	cout << "1。初始化数据" << endl;
-	cout << "2、选择要测试的第一个进程号" << endl;
-	cout << "3、启动测试" << endl;
-	cout << "4、退出系统" << endl;
-	cout << "======================" << endl;
-	int proID=1;
+	int proID ;
 	vector<int> Available;
 	vector<vector<int>> Max;
 	vector<vector<int>> Allocation;
@@ -228,46 +223,52 @@ void menu()
 	vector<bool> Finish;
 	vector<int> Sum;
 	vector<int> Work;
-	cin >> flagCase;
 
-	switch (flagCase)
+	while (true)
 	{
-	case 1:init(Available, Max, Allocation, Need, Request, Finish, Sum); break;
-	case 2:
-	{
-		cin >> proID;	
-	}; break;
-	case 3: {
-		int flag;
-		flag = safeCheck(Request,Need,Available,proID);
-		if (flag==-1)
+		cout << "输入数字选择相应功能（请顺序执行）" << endl;
+		cout << "======================" << endl;
+		cout << "1。初始化数据" << endl;
+		cout << "2、选择要测试的第一个进程号" << endl;
+		cout << "3、启动测试" << endl;
+		cout << "4、退出系统" << endl;
+		cout << "======================" << endl;
+		cin >> flagCase;
+		switch (flagCase)
 		{
-			cout << "未通过Need检查" << endl;
-			break;
-		}
-		else
+		case 1:init(Available, Max, Allocation, Need, Request, Finish, Sum); break;
+		case 2:
 		{
-			if (flag==1)
+			cout << "输入进程号：" ;
+			cin >> proID;
+			proID--;
+		}; break;
+		case 3: {
+			int flag;
+			flag = safeCheck(Request, Need, Available, proID);
+			if (flag == -1)
 			{
-				resultFunction(bankerTest(Request,Need,Available,Finish,Allocation,Max,proID));
+				cout << "未通过Need检查" << endl;
 				break;
 			}
 			else
 			{
-				cout << "未通过Available检查" << endl;
-				break;
+				if (flag == 1)
+				{
+					resultFunction(bankerTest(Request, Need, Available, Finish, Allocation, Max, proID));
+					break;
+				}
+				else
+				{
+					cout << "未通过Available检查" << endl;
+					break;
+				}
 			}
 		}
+		case 4: exit(1);
+		default:
+			cout << "输入错误重新输入" << endl;
+			break;
+		}
 	}
-	case 4: exit(1);
-	default:
-		cout << "输入错误重新输入" << endl;
-		break;
-	}
-}
-
-int main()
-{
-	while (true)
-		menu();
 }
