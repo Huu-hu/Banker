@@ -50,7 +50,7 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 		int temp = Sum[i];
 		for (int j = 0; j < g_proNum; j++)
 		{
-			temp -= Allocation[i][j];
+			temp -= Allocation[j][i];
 		}
 		Available.push_back(temp);
 	}
