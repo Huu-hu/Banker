@@ -3,6 +3,17 @@
 using namespace std;
 
 int g_srcNum, g_proNum;
+int flagCase;
+int proID;
+vector<int> Available;
+vector<vector<int>> Max;
+vector<vector<int>> Allocation;
+vector<vector<int>> Need;
+vector<int> Request;
+vector<bool> Finish;
+vector<int> Sum;
+vector<int> Work;
+vector<int> Sequence;
 
 void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> &Allocation, vector<vector<int>> &Need, vector<int> &Request, vector<bool> &Finish,vector<int> &Sum)		//初始化相关变量
 {
@@ -95,8 +106,8 @@ int safeCheck(vector<int> &Request, vector<vector<int>> &Need,vector<int> &Avail
 	int flagBool=1;		//设置检查标志量 -1未通过Need检查，0未通过Available检查，1通过检查
 	//cout << "设置需要请求的进程的ID号:";
 	//cin >> proID;
-	setRequest(Request);
-	for (size_t i = 0; i < g_srcNum; i++)
+	/*setRequest(Request);*/
+	for (int i = 0; i < g_srcNum; i++)
 	{
 		if (Request[i]>Need[proID][i])
 		{
@@ -122,7 +133,6 @@ bool bankerTest(vector<int> &Request, vector<vector<int>> &Need, vector<int> &Av
 	vector<vector<int>> tempNeed = Need;		//保存Need数组
 	vector<vector<int>> tempAllocation = Allocation;		//保存Allocation数组
 	vector<bool> tempFinish = Finish;
-	int flagFinish = 1;		//Finish计数器,默认第一个请求成功
 
 	//对资源进行预分配
 	for (int i = 0; i < g_srcNum; i++)
@@ -133,21 +143,25 @@ bool bankerTest(vector<int> &Request, vector<vector<int>> &Need, vector<int> &Av
 	//置标志位
 	for (int i = 0; i < g_proNum; i++)
 	{
-		if (Need[proID][i]==0)
+		bool flagFinish = true;
+		for (int j = 0; j < g_srcNum; j++)
 		{
-			Finish[proID] = true;
+			if (Need[i][j]!=0)
+			{
+				flagFinish = false;
+				break;
+			}
 		}
-		else
+		if (flagFinish)
 		{
-			Finish[proID] = false;
-			flagFinish = 0;		//分配数量不够，计数器清零
-			break;
+			Finish[i] = true;
 		}
 	}
 
 	//计算释放资源后Work数目
 	if (Finish[proID]==true)
 	{
+		Sequence.push_back(proID);
 		for (int i = 0; i < g_srcNum; i++)
 		{
 			Work[i] += Allocation[proID][i];
@@ -156,9 +170,10 @@ bool bankerTest(vector<int> &Request, vector<vector<int>> &Need, vector<int> &Av
 
 	//安全性算法检测
 	//随机分配资源，分配以满足Need和Available优先
-	bool finishChange = false;		//Finish改变标志
+	bool finishChange = false;
 	do
 	{
+		finishChange = false;		//Finish改变标志
 		for (int i = 0; i < g_proNum; i++)
 		{
 			if (Finish[i] == true)
@@ -168,7 +183,8 @@ bool bankerTest(vector<int> &Request, vector<vector<int>> &Need, vector<int> &Av
 			{
 				if (Need[i][j] > Work[j])
 				{
-					checkTemp = true;		//资源数量少于需求，分配失败
+					checkTemp = true;	//资源数量少于需求，分配失败
+					break;
 				}
 			}
 			if (checkTemp == true)
@@ -176,26 +192,29 @@ bool bankerTest(vector<int> &Request, vector<vector<int>> &Need, vector<int> &Av
 				continue;
 			}
 			//进行资源分配
+			Sequence.push_back(i);
 			for (int j = 0; j < g_srcNum; j++)
 			{
 				Work[j] += Allocation[i][j];
 				finishChange = true;
-				flagFinish++;
 				Finish[i] = true;
+
 			}
 		}
-	} while (finishChange);		
-	if (flagFinish==g_proNum)		//返回结果
+		
+	} while (finishChange);	
+	for (int i = 0; i < g_proNum; i++)
 	{
-		return true;
+		if (Finish[i]==false)		//返回结果
+		{								//回滚数据
+			Need = tempNeed;
+			Allocation = tempAllocation;
+			Finish = tempFinish;
+			return false;
+		}
 	}
-	else
-	{								//回滚数据
-		Need = tempNeed;
-		Allocation = tempAllocation;
-		Finish = tempFinish;
-		return false;
-	}
+	return true;
+
 }
 
 
@@ -203,6 +222,12 @@ void resultFunction(bool flag)
 {
 	if (flag)
 	{
+		cout << "进程执行顺序为：";
+		for (int i = 0; i < g_proNum; i++)
+		{
+			cout << Sequence[i]+1 << ",";
+		}
+		cout << endl;
 		cout << "系统安全不会发生死锁" << endl;
 	}
 	else
@@ -214,16 +239,6 @@ void resultFunction(bool flag)
 
 int main()
 {
-	int flagCase;
-	int proID ;
-	vector<int> Available;
-	vector<vector<int>> Max;
-	vector<vector<int>> Allocation;
-	vector<vector<int>> Need;
-	vector<int> Request;
-	vector<bool> Finish;
-	vector<int> Sum;
-	vector<int> Work;
 
 	while (true)
 	{
@@ -246,6 +261,7 @@ int main()
 		}; break;
 		case 3: {
 			int flag;
+			setRequest(Request);
 			flag = safeCheck(Request, Need, Available, proID);
 			if (flag == -1)
 			{
