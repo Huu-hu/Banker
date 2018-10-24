@@ -44,14 +44,15 @@ void init(vector<int> &Available, vector<vector<int>> &Max, vector<vector<int>> 
 		Allocation.push_back(allocationTemp);
 	}
 	
+	
 	for (int i = 0; i < g_srcNum; i++)		//计算空闲资源
 	{
-		int temp;
+		int temp = Sum[i];
 		for (int j = 0; j < g_proNum; j++)
 		{
-			temp = Max[j][i] - Allocation[j][i];
-			Available.push_back(temp);
+			temp -= Allocation[i][j];
 		}
+		Available.push_back(temp);
 	}
 
 	for (int i = 0; i < g_proNum; i++)		//计算各个进程还需要的资源数量
